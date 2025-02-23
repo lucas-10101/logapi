@@ -3,6 +3,8 @@ package settings
 type ApplicationProperties struct {
 	defaultNoSQLProvider string
 	defaultIanaTimeZone  string
+	defaultDatabase      string
+	defaultCollection    string
 }
 
 func (properties ApplicationProperties) GetDefaultNoSQLProvider() string {
@@ -10,5 +12,13 @@ func (properties ApplicationProperties) GetDefaultNoSQLProvider() string {
 }
 
 func (properties ApplicationProperties) GetDefaultTimeZone() string {
-	return properties.defaultTimeZone
+	return properties.defaultIanaTimeZone
+}
+
+func (properties ApplicationProperties) GetDefaultDatabase() string {
+	return properties.defaultDatabase
+}
+
+func (properties ApplicationProperties) GetDefaultCollection() string {
+	return properties.defaultCollection
 }

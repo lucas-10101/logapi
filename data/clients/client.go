@@ -6,15 +6,16 @@ import (
 
 var (
 	defaultDriver = "mongodb"
-	clients       map[string]*databaseClient
+	clients       = map[string]databaseClient{}
 )
 
 // Compatible client definition for use in api
 type databaseClient interface {
-	InsertOne(data *model.Document)
+	InsertOne(model.Document)
 }
 
-func GetClient(driverName string) *databaseClient {
+// Gets or loads an client into managed connections
+func GetClient(driverName string) databaseClient {
 
 	client, loaded := clients[defaultDriver]
 
@@ -25,15 +26,19 @@ func GetClient(driverName string) *databaseClient {
 	return client
 }
 
-func GetDefaultClient() *databaseClient {
-	return GetClient(defaultDriver)
-}
+// Client loading function
+func loadClient(driverName string) databaseClient {
 
-func loadClient(driverName string) {
-
+	var commonClient databaseClient = nil
 	switch driverName {
 	case "mongodb":
 		fallthrough
 	default:
+		client := mongoDBClient{}
+		client.Connect()
+		commonClient = client
 	}
+
+	clients[defaultDriver] = commonClient
+	return commonClient
 }

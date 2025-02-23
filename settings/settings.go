@@ -3,6 +3,8 @@ package settings
 import (
 	"fmt"
 	"time"
+
+	"github.com/lucas-10101/logapi/data/clients"
 )
 
 var (
@@ -13,6 +15,7 @@ var (
 func Configure() {
 	configureApplicationProperties() // must be first call to gather all required configuration
 	configureTimeZone()
+	configureDefaultConnection()
 }
 
 func configureTimeZone() {
@@ -28,4 +31,10 @@ func configureTimeZone() {
 func configureApplicationProperties() {
 	APPLICATION_PROPERTIES.defaultNoSQLProvider = "mongodb"
 	APPLICATION_PROPERTIES.defaultIanaTimeZone = "Etc/GMT+0"
+	APPLICATION_PROPERTIES.defaultDatabase = "teste"
+	APPLICATION_PROPERTIES.defaultCollection = "teste"
+}
+
+func configureDefaultConnection() {
+	clients.GetClient(APPLICATION_PROPERTIES.GetDefaultNoSQLProvider())
 }

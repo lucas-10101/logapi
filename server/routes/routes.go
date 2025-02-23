@@ -2,8 +2,11 @@ package routes
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/lucas-10101/logapi/data/clients"
+	"github.com/lucas-10101/logapi/data/model"
 )
 
 func MakeRoutes() *mux.Router {
@@ -30,5 +33,20 @@ func loggerRoutes(router *mux.Router) {
 
 	loggerGroup.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 
+		log := model.LogDocument{
+			Timestamp: time.Now(),
+			ApplicationSource: model.LogDocumentApplicationSource{
+				ApplicationName:  "LogApi",
+				ApplicationRoute: request.URL.RawPath,
+			},
+			RequestInfo: model.LogDocumentRequestInfo{
+				RequestMethod:     request.Method,
+				RequestStatusCode: 204,
+				RequestDuration:   nil,
+			},
+			ErrorInfo: model.LogDocumentErrorInfo{},
+		}
+
+		clients.GetClient("mongodb").InsertOne(log.ToDocument())
 	}).Methods(http.MethodPost)
 }
