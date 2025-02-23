@@ -1,7 +1,8 @@
-package clients
+package dbclients
 
 import (
-	"github.com/lucas-10101/logapi/data/model"
+	"github.com/lucas-10101/logapi/data/models"
+	"github.com/lucas-10101/logapi/settings"
 )
 
 var (
@@ -11,7 +12,12 @@ var (
 
 // Compatible client definition for use in api
 type databaseClient interface {
-	InsertOne(model.Document)
+	InsertOne(models.Document) (any, error)
+}
+
+// Gets the default driver client
+func GetDefaultClient() databaseClient {
+	return GetClient(settings.GetApplicationProperties().GetDatabaseProperties().GetDefaultDriver())
 }
 
 // Gets or loads an client into managed connections

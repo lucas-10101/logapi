@@ -1,4 +1,4 @@
-package clients
+package dbclients
 
 import (
 	"context"
@@ -6,7 +6,8 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/lucas-10101/logapi/data/model"
+	"github.com/lucas-10101/logapi/data/models"
+	"github.com/lucas-10101/logapi/settings"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -18,9 +19,11 @@ type mongoDBClient struct {
 }
 
 // Insert document on deafult database/collection
-func (client mongoDBClient) InsertOne(document model.Document) {
-
-	client.rawClient.Database("teste").Collection("teste").InsertOne(context.Background(), convertToBsonD(document))
+func (client mongoDBClient) InsertOne(document models.Document) (any, error) {
+	return client.rawClient.
+		Database(settings.GetApplicationProperties().GetDatabaseProperties().GetDefaultDatabase()).
+		Collection(settings.GetApplicationProperties().GetDatabaseProperties().GetDefaultCollection()).
+		InsertOne(context.Background(), convertToBsonD(document))
 }
 
 // starts the managed connection
@@ -44,7 +47,7 @@ func (client *mongoDBClient) Connect() {
 }
 
 // convert application document to mongo data type bson.D
-func convertToBsonD(document model.Document) bson.D {
+func convertToBsonD(document models.Document) bson.D {
 	bsonData := make([]bson.E, len(document))
 	for i, e := range document {
 
@@ -61,7 +64,7 @@ func convertToBsonD(document model.Document) bson.D {
 func convertToBsonDValueCollector(actual interface{}) any {
 	value := actual
 	if reflect.TypeOf(value).Name() == "Document" {
-		asserted, ok := value.(model.Document)
+		asserted, ok := value.(models.Document)
 		if ok {
 			value = convertToBsonD(asserted)
 		}

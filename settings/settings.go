@@ -3,38 +3,29 @@ package settings
 import (
 	"fmt"
 	"time"
-
-	"github.com/lucas-10101/logapi/data/clients"
-)
-
-var (
-	APPLICATION_PROPERTIES = ApplicationProperties{}
 )
 
 // Configure any dependencies in api
 func Configure() {
 	configureApplicationProperties() // must be first call to gather all required configuration
 	configureTimeZone()
-	configureDefaultConnection()
 }
 
 func configureTimeZone() {
-	location, err := time.LoadLocation(APPLICATION_PROPERTIES.GetDefaultTimeZone())
+	location, err := time.LoadLocation(GetApplicationProperties().GetServerProperties().GetDefaultTimeZone())
 
 	if err != nil {
-		panic(fmt.Sprintf("Cant load location: %s\n", APPLICATION_PROPERTIES.GetDefaultTimeZone()))
+		panic(fmt.Sprintf("Cant load location: %s\n", GetApplicationProperties().GetServerProperties().GetDefaultTimeZone()))
 	}
 	time.Local = location
 }
 
 // load application required properties
 func configureApplicationProperties() {
-	APPLICATION_PROPERTIES.defaultNoSQLProvider = "mongodb"
-	APPLICATION_PROPERTIES.defaultIanaTimeZone = "Etc/GMT+0"
-	APPLICATION_PROPERTIES.defaultDatabase = "teste"
-	APPLICATION_PROPERTIES.defaultCollection = "teste"
-}
-
-func configureDefaultConnection() {
-	clients.GetClient(APPLICATION_PROPERTIES.GetDefaultNoSQLProvider())
+	properties.databaseProperties.defaultDriver = "mongodb"
+	properties.databaseProperties.defaultDatabase = "teste"
+	properties.databaseProperties.defaultCollection = "teste"
+	properties.serverProperties.serverHost = "127.0.0.1"
+	properties.serverProperties.serverPort = 2525
+	properties.serverProperties.defaultTimeZone = "Etc/GMT+0"
 }
