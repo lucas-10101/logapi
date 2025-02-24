@@ -3,77 +3,107 @@ package settings
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 var (
-	properties = ApplicationProperties{
-		databaseProperties: DatabaseProperties{
+	properties = applicationProperties{
+		databaseProperties: databaseProperties{
 			driverProperties: map[string]string{},
 		},
-		serverProperties: ServerProperties{},
+		serverProperties: serverProperties{},
 	}
 )
 
-func GetApplicationProperties() ApplicationProperties {
+func GetApplicationProperties() applicationProperties {
 	return properties
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-type ApplicationProperties struct {
-	databaseProperties DatabaseProperties
-	serverProperties   ServerProperties
+type OutputMode string
+
+const (
+	OUTPUT_FILE    = OutputMode("FILE")
+	OUTPUT_CONSOLE = OutputMode("CONSOLE")
+	OUTPUT_NONE    = OutputMode("NONE")
+)
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+type applicationProperties struct {
+	stdInputOutputMode OutputMode
+
+	databaseProperties databaseProperties
+	serverProperties   serverProperties
+	requestProperties  requestProperties
 }
 
-func (properties ApplicationProperties) GetDatabaseProperties() DatabaseProperties {
+func (properties applicationProperties) GetStdInputOutputMode() OutputMode {
+	return properties.stdInputOutputMode
+}
+
+func (properties applicationProperties) GetDatabaseProperties() databaseProperties {
 	return properties.databaseProperties
 }
 
-func (properties ApplicationProperties) GetServerProperties() ServerProperties {
+func (properties applicationProperties) GetServerProperties() serverProperties {
 	return properties.serverProperties
+}
 
+func (properties applicationProperties) GetRequestProperties() requestProperties {
+	return properties.requestProperties
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-type DatabaseProperties struct {
+type databaseProperties struct {
 	defaultDatabase   string
 	defaultCollection string
 	defaultDriver     string
 	driverProperties  map[string]string
 }
 
-func (propeties DatabaseProperties) GetDefaultDatabase() string {
+func (propeties databaseProperties) GetDefaultDatabase() string {
 	return propeties.defaultDatabase
 }
 
-func (propeties DatabaseProperties) GetDefaultCollection() string {
+func (propeties databaseProperties) GetDefaultCollection() string {
 	return propeties.defaultCollection
 }
 
-func (propeties DatabaseProperties) GetDefaultDriver() string {
+func (propeties databaseProperties) GetDefaultDriver() string {
 	return propeties.defaultDriver
 }
 
-func (propeties DatabaseProperties) GetDriverProperties() map[string]string {
+func (propeties databaseProperties) GetDriverProperties() map[string]string {
 	return propeties.driverProperties
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-type ServerProperties struct {
+type serverProperties struct {
 	serverHost      string
 	serverPort      int
 	defaultTimeZone string
 }
 
-func (properties ServerProperties) GetServerHost() string {
+func (properties serverProperties) GetServerHost() string {
 	return properties.serverHost
 }
 
-func (properties ServerProperties) GetServerPort() int {
+func (properties serverProperties) GetServerPort() int {
 	return properties.serverPort
 }
 
-func (properties ServerProperties) GetDefaultTimeZone() string {
+func (properties serverProperties) GetDefaultTimeZone() string {
 	return properties.defaultTimeZone
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+type requestProperties struct {
+	maxPaginationSize int64
+}
+
+func (properties requestProperties) GetMaxPaginationSize() int64 {
+	return properties.maxPaginationSize
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

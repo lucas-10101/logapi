@@ -6,7 +6,6 @@ import (
 
 func MakeRoutes() *mux.Router {
 	router := mux.NewRouter()
-
 	loggerRoutes(router)
 
 	return router

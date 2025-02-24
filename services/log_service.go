@@ -9,3 +9,5 @@ func SaveLog(log models.LogDocument) error {
 	_, error := dbclients.GetDefaultClient().InsertOne(log.ToDocument())
 	return error
 }
+
+func ReadLogs()
