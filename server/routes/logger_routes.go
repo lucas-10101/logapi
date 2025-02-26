@@ -30,7 +30,7 @@ func createNewLogEndpoint(group *mux.Route) *mux.Route {
 			fmt.Println("")
 		}
 
-		err = services.SaveLog(payload)
+		err = services.SaveLog(*payload)
 
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
