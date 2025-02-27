@@ -1,12 +1,11 @@
 package routes
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	"github.com/lucas-10101/logapi/data/models"
-	"github.com/lucas-10101/logapi/server/routes/parser"
+	"github.com/lucas-10101/logapi/server/http_utils"
 	"github.com/lucas-10101/logapi/services"
 )
 
@@ -19,37 +18,32 @@ func loggerRoutes(router *mux.Router) {
 }
 
 // Add route for creating new logs in application
-func createNewLogEndpoint(group *mux.Route) *mux.Route {
+func createNewLogEndpoint(group *mux.Route) {
 	group.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		payload, err := parser.ReadLogObjectFromRequest(r)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintln(w, err.Error())
+		var data models.LogDocument
+		err := http_utils.RequestBodyParser(r, data)
 
-			fmt.Println("")
+		if err != nil {
+			err.Send(w)
+			return
 		}
 
-		err = services.SaveLog(*payload)
-
+		err = services.SaveLog(data)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+			err.Send(w)
 			return
 		}
 
 		w.WriteHeader(http.StatusAccepted)
 	}).Methods(http.MethodPost)
-
-	return group
 }
 
 // Route for reading logs
-func createReadLogsEndpoint(group *mux.Route) *mux.Route {
+func createReadLogsEndpoint(group *mux.Route) {
 	group.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		pageRequest := models.PageRequest{}
 		pageRequest.LoadFromUrlQuery(r.URL.RawQuery)
 
 	}).Methods(http.MethodGet)
-
-	return group
 }

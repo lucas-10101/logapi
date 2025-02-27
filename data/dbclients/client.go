@@ -13,6 +13,7 @@ var (
 // Compatible client definition for use in api
 type databaseClient interface {
 	InsertOne(models.Document) (any, error)
+	Read(models.PageRequest, interface{}) ([]models.Document, error)
 }
 
 // Gets the default driver client
