@@ -1,9 +1,12 @@
 package webutils
 
+import "net/http"
+
 type HttpError interface {
 	Error() string
 	StatusCode() int
 	ErrorBytes() []byte
+	Write(writter http.ResponseWriter)
 }
 
 type httpErrorInternal struct {
@@ -21,6 +24,11 @@ func (err *httpErrorInternal) StatusCode() int {
 
 func (err *httpErrorInternal) ErrorBytes() []byte {
 	return []byte(err.Error())
+}
+
+func (err *httpErrorInternal) Write(writter http.ResponseWriter) {
+	writter.WriteHeader(err.StatusCode())
+	writter.Write(err.ErrorBytes())
 }
 
 func NewHttpError(statusCode int, errorMessage string) HttpError {

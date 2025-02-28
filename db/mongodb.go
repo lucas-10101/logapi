@@ -36,3 +36,7 @@ func GetMongodbClientOptions() *options.ClientOptions {
 
 	return clientOptions
 }
+
+func GetDefaultCollectionClient() *mongo.Collection {
+	return GetMongodbClient().Database("logsdb").Collection("applicationlogs")
+}

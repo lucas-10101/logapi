@@ -16,6 +16,8 @@ func Router() *http.ServeMux {
 	router.HandleFunc("/", func(writter http.ResponseWriter, request *http.Request) {
 		defer PanicHandler(writter, request)
 
+		fmt.Println(request.Method, request.URL.Path, request.URL)
+
 		identifier := getRouteIdentifier(request.Method, request.URL.Path)
 		if handler, exists := routes[identifier]; exists {
 			handler(writter, request)
@@ -43,7 +45,9 @@ func getRouteIdentifier(httpMethod string, requestPath string) string {
 func makeRouteMappings() map[string]http.HandlerFunc {
 	routes := map[string]http.HandlerFunc{}
 
-	addRouteMapping(http.MethodGet, "/logs", routes, handlers.HandlerCreateNewLog)
+	addRouteMapping(http.MethodPost, "/logs", routes, handlers.HandlerCreateNewLog)
+	addRouteMapping(http.MethodGet, "/logs", routes, handlers.HandlerReadLogs)
+
 	return routes
 }
 

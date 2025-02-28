@@ -9,8 +9,8 @@ import (
 )
 
 type Pagination struct {
-	PageNumber int
-	PageSize   int
+	PageNumber int64
+	PageSize   int64
 }
 
 // parse url variables 'pagenumber' and 'pagesize' into *Pagination struct
@@ -20,18 +20,25 @@ func GetPaginationFromUrl(urlData *url.URL) (*Pagination, webutils.HttpError) {
 	if err != nil {
 		return nil, webutils.NewHttpError(http.StatusBadRequest, "url pagination data is invalid")
 	}
-	paginationData := &Pagination{}
+	paginationData := &Pagination{
+		PageNumber: 0,
+		PageSize:   30,
+	}
 
 	queryValue, queryExists := values["pagenumber"]
 	if queryExists && len(queryValue) == 1 {
-		if paginationData.PageNumber, err = strconv.Atoi(queryValue[0]); err != nil || paginationData.PageNumber < 0 {
+
+		paginationData.PageNumber, err = strconv.ParseInt(queryValue[0], 10, 64)
+		if err != nil || paginationData.PageNumber < 0 {
 			return nil, webutils.NewHttpError(http.StatusBadRequest, "url pagination 'pagenumber' is invalid")
 		}
 	}
 
 	queryValue, queryExists = values["pagesize"]
 	if queryExists && len(queryValue) == 1 {
-		if paginationData.PageSize, err = strconv.Atoi(queryValue[0]); err != nil || paginationData.PageSize > 50 {
+
+		paginationData.PageSize, err = strconv.ParseInt(queryValue[0], 10, 64)
+		if err != nil || paginationData.PageSize < 1 || paginationData.PageSize > 50 {
 			return nil, webutils.NewHttpError(http.StatusBadRequest, "url pagination 'pagesize' is invalid")
 		}
 	}
