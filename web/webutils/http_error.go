@@ -3,6 +3,7 @@ package webutils
 type HttpError interface {
 	Error() string
 	StatusCode() int
+	ErrorBytes() []byte
 }
 
 type httpErrorInternal struct {
@@ -16,6 +17,10 @@ func (err *httpErrorInternal) Error() string {
 
 func (err *httpErrorInternal) StatusCode() int {
 	return err.statusCode
+}
+
+func (err *httpErrorInternal) ErrorBytes() []byte {
+	return []byte(err.Error())
 }
 
 func NewHttpError(statusCode int, errorMessage string) HttpError {

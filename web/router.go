@@ -14,6 +14,8 @@ func Router() *http.ServeMux {
 	routes := makeRouteMappings()
 
 	router.HandleFunc("/", func(writter http.ResponseWriter, request *http.Request) {
+		defer PanicHandler(writter, request)
+
 		identifier := getRouteIdentifier(request.Method, request.URL.Path)
 		if handler, exists := routes[identifier]; exists {
 			handler(writter, request)
@@ -42,6 +44,12 @@ func makeRouteMappings() map[string]http.HandlerFunc {
 	routes := map[string]http.HandlerFunc{}
 
 	addRouteMapping(http.MethodGet, "/logs", routes, handlers.HandlerCreateNewLog)
-
 	return routes
+}
+
+func PanicHandler(writter http.ResponseWriter, request *http.Request) {
+	if recover() != nil {
+		writter.WriteHeader(http.StatusInternalServerError)
+		writter.Write([]byte("an unknown error has occuried"))
+	}
 }
