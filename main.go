@@ -1,11 +1,8 @@
 package main
 
-import (
-	"github.com/lucas-10101/logapi/server"
-	"github.com/lucas-10101/logapi/settings"
-)
+import "github.com/lucas-10101/logapi/web"
 
 func main() {
-	settings.Configure()
-	server.InitServer()
+
+	web.ServerInit()
 }
