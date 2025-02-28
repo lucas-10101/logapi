@@ -1,4 +1,4 @@
-package model
+package models
 
 // Compatibility between other providers like, mongodb, dinamoDB or other NoSQL providers
 type Document []DocumentKey

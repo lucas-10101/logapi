@@ -2,30 +2,46 @@ package settings
 
 import (
 	"fmt"
+	"os"
 	"time"
-)
-
-var (
-	APPLICATION_PROPERTIES = ApplicationProperties{}
 )
 
 // Configure any dependencies in api
 func Configure() {
 	configureApplicationProperties() // must be first call to gather all required configuration
 	configureTimeZone()
+	configureStdInputOutputMode()
 }
 
 func configureTimeZone() {
-	location, err := time.LoadLocation(APPLICATION_PROPERTIES.GetDefaultTimeZone())
+	location, err := time.LoadLocation(GetApplicationProperties().GetServerProperties().GetDefaultTimeZone())
 
 	if err != nil {
-		panic(fmt.Sprintf("Cant load location: %s\n", APPLICATION_PROPERTIES.GetDefaultTimeZone()))
+		panic(fmt.Sprintf("Cant load location: %s\n", GetApplicationProperties().GetServerProperties().GetDefaultTimeZone()))
 	}
 	time.Local = location
 }
 
 // load application required properties
 func configureApplicationProperties() {
-	APPLICATION_PROPERTIES.defaultNoSQLProvider = "mongodb"
-	APPLICATION_PROPERTIES.defaultIanaTimeZone = "Etc/GMT+0"
+	properties.stdInputOutputMode = OUTPUT_CONSOLE
+	properties.databaseProperties.defaultDriver = "mongodb"
+	properties.databaseProperties.defaultDatabase = "teste"
+	properties.databaseProperties.defaultCollection = "teste"
+	properties.serverProperties.serverHost = "127.0.0.1"
+	properties.serverProperties.serverPort = 2525
+	properties.serverProperties.defaultTimeZone = "Etc/GMT+0"
+}
+
+// Disable stdInput and stdOutput from whole application, not touching stdError
+func configureStdInputOutputMode() {
+	switch GetApplicationProperties().GetStdInputOutputMode() {
+	case OUTPUT_FILE:
+		panic("not implemented yet")
+	case OUTPUT_NONE:
+		os.Stdout = nil
+	case OUTPUT_CONSOLE:
+		fallthrough
+	default:
+	}
 }
