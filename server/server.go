@@ -10,6 +10,8 @@ import (
 
 func InitServer() {
 
+	routes := routes.MakeRoutes()
+
 	fmt.Printf("Listening on %s:%d\n",
 		settings.GetApplicationProperties().GetServerProperties().GetServerHost(),
 		settings.GetApplicationProperties().GetServerProperties().GetServerPort(),
@@ -19,7 +21,7 @@ func InitServer() {
 			settings.GetApplicationProperties().GetServerProperties().GetServerHost(),
 			settings.GetApplicationProperties().GetServerProperties().GetServerPort(),
 		),
-		routes.MakeRoutes(),
+		routes,
 	)
 
 	if err != nil {

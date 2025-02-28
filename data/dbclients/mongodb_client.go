@@ -2,10 +2,8 @@ package dbclients
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"reflect"
-	"time"
 
 	"github.com/lucas-10101/logapi/data/models"
 	"github.com/lucas-10101/logapi/server/http_utils"
@@ -74,15 +72,13 @@ func (client *mongoDBClient) Connect() {
 
 	connection, err := mongo.Connect(options.Client().ApplyURI("mongodb://lucas:lucas@mongodb:27017"))
 	if err != nil {
-		fmt.Println("Cant connect, reason: " + err.Error())
+		panic("Cant create connection, reason: " + err.Error())
 	}
 
-	timeoutContext, _ := context.WithTimeout(context.Background(), 5*time.Second)
-	err = connection.Ping(timeoutContext, readpref.Nearest())
+	err = connection.Ping(context.TODO(), readpref.Nearest())
 	if err != nil {
-		fmt.Println("No server response, reason: " + err.Error())
+		panic("no server response, reason: " + err.Error())
 	}
-
 	client.rawClient = connection
 }
 

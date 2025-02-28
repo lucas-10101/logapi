@@ -24,7 +24,7 @@ func configureTimeZone() {
 
 // load application required properties
 func configureApplicationProperties() {
-	properties.stdInputOutputMode = OUTPUT_NONE
+	properties.stdInputOutputMode = OUTPUT_CONSOLE
 	properties.databaseProperties.defaultDriver = "mongodb"
 	properties.databaseProperties.defaultDatabase = "teste"
 	properties.databaseProperties.defaultCollection = "teste"

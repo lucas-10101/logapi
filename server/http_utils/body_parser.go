@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -18,7 +19,7 @@ func RequestBodyParser(request *http.Request, target any) HttpError {
 	case MimeTypeApplicationJson:
 		return jsonBodyParser(request, target)
 	case MimeTypeApplicationXml:
-		return jsonBodyParser(request, target)
+		return xmlBodyParser(request, target)
 	default:
 		return NewHttpError(http.StatusUnsupportedMediaType, fmt.Sprintf("%s not supported", request.Header.Get(string(ContentTypeHeader))))
 	}
@@ -30,6 +31,9 @@ func jsonBodyParser(request *http.Request, target any) HttpError {
 	err := decoder.Decode(target)
 
 	if err != nil {
+		if err == io.EOF {
+			return NewHttpError(http.StatusBadRequest, err.Error())
+		}
 		return NewHttpError(http.StatusInternalServerError, err.Error())
 	}
 
@@ -37,11 +41,14 @@ func jsonBodyParser(request *http.Request, target any) HttpError {
 }
 
 func xmlBodyParser(request *http.Request, target any) HttpError {
-	decoder := xml.NewDecoder(nil)
+	decoder := xml.NewDecoder(request.Body)
 	decoder.Strict = true
 	err := decoder.Decode(target)
 
 	if err != nil {
+		if err == io.EOF {
+			return NewHttpError(http.StatusBadRequest, err.Error())
+		}
 		return NewHttpError(http.StatusInternalServerError, err.Error())
 	}
 

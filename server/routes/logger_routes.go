@@ -11,18 +11,18 @@ import (
 
 // create logger functionality routes
 func loggerRoutes(router *mux.Router) {
-	group := router.PathPrefix("/logger")
+	group := router.PathPrefix("/logger").Subrouter()
 
-	createNewLogEndpoint(group)
 	createReadLogsEndpoint(group)
+	createNewLogEndpoint(group)
 }
 
 // Add route for creating new logs in application
-func createNewLogEndpoint(group *mux.Route) {
-	group.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func createNewLogEndpoint(router *mux.Router) {
+	router.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
 
 		var data models.LogDocument
-		err := http_utils.RequestBodyParser(r, data)
+		err := http_utils.RequestBodyParser(r, &data)
 
 		if err != nil {
 			err.Send(w)
@@ -40,10 +40,20 @@ func createNewLogEndpoint(group *mux.Route) {
 }
 
 // Route for reading logs
-func createReadLogsEndpoint(group *mux.Route) {
-	group.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func createReadLogsEndpoint(router *mux.Router) {
+	router.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
 		pageRequest := models.PageRequest{}
 		pageRequest.LoadFromUrlQuery(r.URL.RawQuery)
 
+		data, err := services.ReadLogs(pageRequest)
+		if err != nil {
+			err.Send(w)
+			return
+		}
+
+		err = http_utils.ResponseBodyWritter(http_utils.MimeTypeApplicationJson, w, data)
+		if err != nil {
+			err.Send(w)
+		}
 	}).Methods(http.MethodGet)
 }
